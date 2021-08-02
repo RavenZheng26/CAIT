@@ -7,9 +7,9 @@ class searchBox extends React.Component {
       input: "",
       submit: "",
       showMessage: false,
-      title: "",
-      poster: "",
-      year: ""
+      title: [],
+      poster: [],
+      year: []
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -22,48 +22,26 @@ class searchBox extends React.Component {
   }
   handleSubmit(event) {
     event.preventDefault();
-    //console.log("2");
 
     fetch("https://www.omdbapi.com/?s=" + this.state.input + "&apikey=3da8cf13")
       .then((response) => response.json())
       .then((movies) => {
-        //displayResults(json);
-        //    });
-        //console.log("3");
-
-        //function displayResults(json) {
-        //console.log("4");
-        //console.log(json);
-
-        //  const movies = json;
-        //console.log(movies.totalResults + " results");
-        //console.log(movies.Search[1].Title);
-
         if (movies.Response === "False") {
-          console.log("failed");
-          alert('Can not find movie using: ' + this.state.input);
+          alert("Can not find movie using: " + this.state.input);
         } else {
-          this.setState({
-            title: movies.Search[0].Title,
-            year: movies.Search[0].Year,
-            poster: movies.Search[0].Poster
-          });
-
-          // for (var i = 0; i < movies.totalResults; i++) {
-          //t = movies.Search[0].Title;
-          //p = movies.Search[0].Poster;
-          //console.log(movies.Search[i]);
-          // }
+          for (var i = 0; i < movies.totalResults; i++) {
+            this.setState({
+              title: [...this.state.title, movies.Search[i].Title],
+              year: [...this.state.year, movies.Search[i].Year],
+              poster: [...this.state.poster, movies.Search[i].Poster]
+            });
+          }
         }
       });
 
-    //console.log(result.json);
-    //  let t = movie.Search[0].Title;
     this.setState({
       showMessage: true
-      // title: movies.Search[0].Title
     });
-    // });
   }
 
   render() {
@@ -71,12 +49,24 @@ class searchBox extends React.Component {
       <form onSubmit={this.handleSubmit}>
         <input value={this.state.value} onChange={this.handleChange} />
         <button type="submit" onClick={this.handleSubmit}>
-          Submit
+          {" "}
+          Submit{" "}
         </button>
+
         {this.state.showMessage && <p>You searched: {this.state.input}</p>}
-        {this.state.showMessage && <p> {this.state.title} </p>}
-        {this.state.showMessage && <p> {this.state.year} </p>}
-        {this.state.showMessage && <img src={this.state.poster} />}
+        {this.state.title.map((item, i) => (
+          <ul key={i} value={item}>
+            {item}
+          </ul>
+        ))}
+        {this.state.year.map((item, i) => (
+          <ul key={i} value={item}>
+            {item}
+          </ul>
+        ))}
+        {this.state.poster.map((item, i) => (
+          <img key={i} src={item} />
+        ))}
       </form>
     );
   }
@@ -84,8 +74,3 @@ class searchBox extends React.Component {
 
 const domContainer = document.querySelector("#search_box");
 ReactDOM.render(element(searchBox), domContainer);
-
-
-//ReactDOM.render(<re1 />, document.getElementById("root"));
-console.log("start");
-
